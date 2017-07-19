@@ -36,7 +36,8 @@ namespace AzureStorageBlobPlayArea.Controllers
 
         public ActionResult ShowImage(string id)
         {
-            Uri imageUri = _imageStoreService.GetResourceUri(id);
+            // Uri imageUri = _imageStoreService.GetResourceUri(id);
+            Uri imageUri = _imageStoreService.GetResourceUriWithSas(id);
 
             return View(imageUri);
         }
