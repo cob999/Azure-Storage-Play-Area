@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "Upload an image";
+}
+
+<h3>@ViewBag.Title</h3>
+
+<form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()    
+    
+    <input type="file" name="image" />
+    <br />
+    <input type="submit" class="btn btn-primary" value="Upload..." />
+</form>
