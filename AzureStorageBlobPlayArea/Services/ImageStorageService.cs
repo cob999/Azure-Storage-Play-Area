@@ -19,7 +19,7 @@ namespace AzureStorageBlobPlayArea.Services
 
         public ImageStorageService()
         {
-            var credentials = new StorageCredentials("storageplayarea", "i7+dG4heTsysr6oD+lNMRNni5Nr560ZY44TOKK7sRe0nQWaxUWovnlRY/a6mz3dPH1g1SWIrx2WQ9eu3mtpXLw==");
+            var credentials = new StorageCredentials("storageplayarea", "cuES+hRtWOfSWl7YbLLMDu/OLABmW3W488bdIdaYZtw0gUkeldOsUvevirpWHLl87fH997m7xcilH08lEo9nFA==");
             _cloudBlobClient = new CloudBlobClient(_blobServiceEndpoint, credentials);
             _container = _cloudBlobClient.GetContainerReference("private-images");
         }
@@ -52,6 +52,32 @@ namespace AzureStorageBlobPlayArea.Services
             await blob.UploadFromStreamAsync(imageInputStream);
 
             return id;
+        }
+
+        public List<CloudBlockBlob> GetImages()
+        {
+            var blockBlobs = new List<CloudBlockBlob>();
+            IEnumerable<IListBlobItem> blobs = _container.ListBlobs();
+            IList<IListBlobItem> blobItems = blobs as IList<IListBlobItem> ?? blobs.ToList();
+
+            if (blobItems.Count == 0) return blockBlobs;
+
+            foreach (IListBlobItem blobItem in blobItems)
+            {
+                if (blobItem is CloudBlockBlob)
+                {
+                    blockBlobs.Add(blobItem as CloudBlockBlob);
+                }    
+            }
+
+            return blockBlobs;
+        }
+
+        public async Task<bool> DeleteImage(string resourceId)
+        {
+            CloudBlockBlob blob = _container.GetBlockBlobReference(resourceId);
+
+            return await blob.DeleteIfExistsAsync();
         }
     }
 }

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AzureStorageBlobPlayArea.Models;
 using AzureStorageBlobPlayArea.Services;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace AzureStorageBlobPlayArea.Controllers
 {
@@ -19,7 +21,9 @@ namespace AzureStorageBlobPlayArea.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            List<CloudBlockBlob> blobs = _imageStoreService.GetImages();
+
+            return View(blobs);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -28,7 +32,7 @@ namespace AzureStorageBlobPlayArea.Controllers
             if (image != null)
             {
                 string imageId = await _imageStoreService.SaveImage(image.InputStream);
-                return RedirectToAction("ShowImage", new {id = imageId});
+                return RedirectToAction("ShowImage", new { id = imageId });
             }
 
             return View("Index");
@@ -36,10 +40,26 @@ namespace AzureStorageBlobPlayArea.Controllers
 
         public ActionResult ShowImage(string id)
         {
+            // use this for container that has access type set to Blob
             // Uri imageUri = _imageStoreService.GetResourceUri(id);
-            Uri imageUri = _imageStoreService.GetResourceUriWithSas(id);
 
-            return View(imageUri);
+            var viewModel = new ImageViewerViewModel()
+            {
+               Uri = _imageStoreService.GetResourceUriWithSas(id),
+               ResourceId = id
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteImage(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            await _imageStoreService.DeleteImage(id);
+
+            return RedirectToAction("Index");
         }
     }
 }

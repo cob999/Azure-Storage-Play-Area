@@ -1,13 +1,50 @@
-﻿@{
-    ViewBag.Title = "Upload an image";
+﻿@model List<Microsoft.WindowsAzure.Storage.Blob.CloudBlockBlob>
+
+@{
+
 }
 
-<h3>@ViewBag.Title</h3>
+<div class="row">
+    <div class="col-md-9">
+        @if (Model != null && Model.Any())
+        {
+            <h3>Existing Image(s)</h3>
 
-<form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()    
-    
-    <input type="file" name="image" />
-    <br />
-    <input type="submit" class="btn btn-primary" value="Upload" />
-</form>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <td>Image</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("ShowImage", "Images", new {id = Model[i].Name})">Image @(i + 1)</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br/>
+            <div class="alert alert-info">
+                Upload your first image...
+            </div>
+        }
+    </div>
+    <div class="col-md-3">
+        <h3>Upload an image</h3>
+
+        <form action="@Url.Action("Upload")" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <input type="file" name="image" />
+            <br />
+            <input type="submit" class="btn btn-primary" value="Upload" />
+        </form>
+    </div>
+</div>

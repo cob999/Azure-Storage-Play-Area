@@ -1,9 +1,15 @@
-﻿@model Uri
+﻿@model AzureStorageBlobPlayArea.Models.ImageViewerViewModel
 
 @{
     ViewBag.Title = "Uploaded Image Result";
 }
 
-<h2>Uploaded Image Result</h2>
+<h2>Image Viewer</h2>
 
-<img src="@Model" alt="Oops!!!" />
+<form action="@Url.Action("DeleteImage")" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.ResourceId" />
+    <input type="submit" class="btn btn-primary" value="Delete" />
+</form>
+<br />
+<img src="@Model.Uri" alt="Oops!!!" />
